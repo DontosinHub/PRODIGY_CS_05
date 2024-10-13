@@ -1,0 +1,39 @@
+# Import the required modules
+from scapy.all import sniff, IP, TCP, UDP
+
+def packet_analyzer(packet):
+    # Check if the packet has an IP layer
+    if IP in packet:
+        # Get the source and destination IP addresses
+        source_ip = packet[IP].src
+        destination_ip = packet[IP].dst
+
+        # Determine the protocol (TCP/UDP/Other)
+        if packet.haslayer(TCP):
+            protocol = 'TCP'
+        elif packet.haslayer(UDP):
+            protocol = 'UDP'
+        else:
+            protocol = 'Other'
+
+        # Get the payload data (if any)
+        payload = bytes(packet[IP].payload)
+
+        # Display packet information
+        print(f"Source IP: {source_ip}")
+        print(f"Destination IP: {destination_ip}")
+        print(f"Protocol: {protocol}")
+        print(f"Payload: {payload}")
+        print("-" * 50)
+
+# Main function to start the packet sniffer
+def start_sniffing():
+    print("Starting packet sniffer...\n")
+    # Sniff packets on the network interface. You can adjust the filter for specific protocols if needed
+    sniff(prn=packet_analyzer, filter="ip", store=0)
+
+if __name__ == "__main__":
+    try:
+        start_sniffing()
+    except KeyboardInterrupt:
+        print("\nPacket sniffing stopped.")
